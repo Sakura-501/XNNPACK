@@ -61,6 +61,7 @@ static enum xnn_status check_zero_point(
         return xnn_status_invalid_parameter;
       }
       break;
+    case xnn_datatype_qint4:
     case xnn_datatype_qint8:
       if ((int32_t) (int8_t) zero_point != zero_point) {
         xnn_log_error(

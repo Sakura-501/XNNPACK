@@ -1202,6 +1202,7 @@ ynn_type type_from_xnn(xnn_datatype type) {
       return ynn_type_bf16;
     case xnn_datatype_qduint8:
       return ynn_type_uint8;
+    case xnn_datatype_qint4:
     case xnn_datatype_qpint8:
     case xnn_datatype_pfp32:
     case xnn_datatype_pfp16:
