@@ -8,6 +8,7 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=invalid-name
 
+from ynnpack.kernels.dot.generator.dot_base import generate_dot_kernels
 from ynnpack.kernels.dot.generator.x86 import x86
 from ynnpack.kernels.dot.generator.x86 import x86_avx
 from ynnpack.kernels.dot.generator.x86 import x86_avx512
@@ -75,3 +76,30 @@ class x86_avx512_int8_int8_int32_k1(x86_avx512, x86_int8_int8_int32_k1):
     self.a_type = "int8_t"
     self.b_type = "int8_t"
     self.flags += ["dot_flag::consistent_arithmetic"]
+
+
+generate_dot_kernels(
+    x86_avx2_int8_int8_int32_k1(),
+    [
+        "dot,1x32x1",
+        "dot,2x32x1",
+        "dot,3x16x1",
+        "dot,4x16x1",
+        "dot,5x16x1",
+        "dot,8x8x1",
+    ],
+)
+
+generate_dot_kernels(
+    x86_avx512_int8_int8_int32_k1(),
+    [
+        "dot,1x64x1",
+        "dot,2x64x1",
+        "dot,3x64x1",
+        "dot,4x32x1",
+        "dot,5x32x1",
+        "dot,6x32x1",
+        "dot,8x32x1",
+        "dot,16x16x1",
+    ],
+)

@@ -10,6 +10,7 @@ Provides the basic structure and shared logic for generating dot kernels."""
 # pylint: disable=missing-function-docstring
 
 from collections.abc import Sequence
+import sys
 
 
 def indent(text, prefix):
@@ -536,3 +537,53 @@ do {
     src += self.end_func()
 
     return src, inc
+
+
+def generate_dot_kernels_impl(
+    gen: dot_base, output_src: str, output_inc: str, spec: Sequence[str]
+):
+  src = gen.header()
+  inc = ""
+
+  endifs = 0
+
+  for i in spec:
+    if i.startswith("--build_predicate="):
+      endifs += 1
+      src += "#if " + i.split("=")[1] + "\n"
+    else:
+      args = i.split(",")
+      kind = args[0]
+      mr, nr, kr = args[1].split("x")
+      if kind == "dot":
+        src_i, inc_i = gen.generate_dot(int(mr), int(nr), int(kr))
+      else:
+        raise ValueError(f"Unknown kind: {kind}")
+
+      src += src_i
+      inc += inc_i
+
+  for i in range(endifs):
+    src += "#endif\n"
+
+  src += gen.footer()
+
+  with open(output_src, "w") as f:
+    f.write(src)
+  with open(output_inc, "w") as f:
+    f.write(inc)
+
+
+def get_output_path(filename: str) -> str:
+  paths = [i for i in sys.argv[1:] if i.endswith(filename)]
+  if len(paths) != 1:
+    raise ValueError(f"Expected one path for {filename}, found {paths}")
+  return paths[0]
+
+
+def generate_dot_kernels(gen: dot_base, spec: Sequence[str]):
+  output_src = type(gen).__name__ + ".cc"
+  output_inc = type(gen).__name__ + ".inc"
+  output_src = get_output_path(output_src)
+  output_inc = get_output_path(output_inc)
+  generate_dot_kernels_impl(gen, output_src, output_inc, spec)

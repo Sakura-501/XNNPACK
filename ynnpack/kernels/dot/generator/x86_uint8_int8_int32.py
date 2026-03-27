@@ -8,6 +8,7 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=invalid-name
 
+from ynnpack.kernels.dot.generator.dot_base import generate_dot_kernels
 from ynnpack.kernels.dot.generator.x86 import x86_avx512
 
 
@@ -46,3 +47,24 @@ YNN_INTRINSIC int32_t unaligned_load_u8x4(const uint8_t* ptr) {
     mm = self._mm()
     c_ij = f"c_{i}_{j}"
     return f"{c_ij} = {mm}_dpbusd_epi32({c_ij}, a_{i}_{k}, b_{k}_{j});\n"
+
+
+generate_dot_kernels(
+    x86_avx512vnni_uint8_int8_int32(),
+    [
+        "dot,1x64x4",
+        "dot,2x64x4",
+        "dot,3x64x4",
+        "dot,4x64x4",
+        "dot,5x64x4",
+        "dot,1x32x4",
+        "dot,2x32x4",
+        "dot,3x32x4",
+        "dot,4x32x4",
+        "dot,5x32x4",
+        "dot,6x32x4",
+        "dot,8x32x4",
+        "dot,10x32x4",
+        "dot,16x16x4",
+    ],
+)

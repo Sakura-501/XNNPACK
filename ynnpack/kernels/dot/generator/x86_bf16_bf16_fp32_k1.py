@@ -8,6 +8,7 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=invalid-name
 
+from ynnpack.kernels.dot.generator.dot_base import generate_dot_kernels
 from ynnpack.kernels.dot.generator.x86 import x86
 from ynnpack.kernels.dot.generator.x86 import x86_avx
 from ynnpack.kernels.dot.generator.x86 import x86_avx512
@@ -81,3 +82,38 @@ class x86_avx512_bf16_bf16_fp32_k1(x86_bf16_bf16_fp32_k1, x86_avx512):
     c_ij = f"c_{i}_{j}"
     mm = self._mm()
     return f"{c_ij} = {mm}_fmadd_ps(a_{i}_{k}, b_{k}_{j}, {c_ij});\n"
+
+
+generate_dot_kernels(
+    x86_avx2_fma3_bf16_bf16_fp32_k1(),
+    [
+        "dot,1x32x1",
+        "dot,2x32x1",
+        "dot,2x16x1",
+        "dot,3x16x1",
+        "dot,4x16x1",
+        "dot,5x16x1",
+        "dot,8x8x1",
+        "dot,10x8x1",
+    ],
+)
+
+generate_dot_kernels(
+    x86_avx512_bf16_bf16_fp32_k1(),
+    [
+        "dot,1x64x1",
+        "dot,2x64x1",
+        "dot,3x64x1",
+        "dot,4x64x1",
+        "dot,5x64x1",
+        "dot,2x32x1",
+        "dot,3x32x1",
+        "dot,4x32x1",
+        "dot,5x32x1",
+        "dot,6x32x1",
+        "dot,8x32x1",
+        "dot,10x32x1",
+        "dot,12x32x1",
+        "dot,16x16x1",
+    ],
+)

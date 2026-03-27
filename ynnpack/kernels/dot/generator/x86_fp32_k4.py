@@ -8,6 +8,7 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=invalid-name
 
+from ynnpack.kernels.dot.generator.dot_base import generate_dot_kernels
 from ynnpack.kernels.dot.generator.x86 import x86_avx512
 
 
@@ -98,3 +99,20 @@ c_{i+0}_{j} = _mm512_permutexvar_ps({even}, c_{i+0}_{j});
 
   def product(self, i, j, k):
     return f"c_{i}_{j} = _mm512_fmadd_ps(a_{i}_{k}, b_{k}_{j}, c_{i}_{j});\n"
+
+
+generate_dot_kernels(
+    x86_avx512_fp32_k4(),
+    [
+        "dot,1x32x4",
+        "dot,2x32x4",
+        "dot,3x16x4",
+        "dot,4x16x4",
+        "dot,5x16x4",
+        "dot,2x8x4",
+        "dot,4x8x4",
+        "dot,6x8x4",
+        "dot,4x4x4",
+        "dot,8x4x4",
+    ],
+)

@@ -8,6 +8,7 @@
 # pylint: disable=invalid-name
 # pylint: disable=missing-class-docstring
 
+from ynnpack.kernels.dot.generator.dot_base import generate_dot_kernels
 from ynnpack.kernels.dot.generator.x86 import x86
 from ynnpack.kernels.dot.generator.x86 import x86_avx
 from ynnpack.kernels.dot.generator.x86 import x86_avx512
@@ -72,3 +73,56 @@ class x86_avx512_fp16_fp16_fp32(x86_fp16_fp16_fp32, x86_avx512):
   def product(self, i, j, k):
     c_ij = f"c_{i}_{j}"
     return f"{c_ij} = {self._mm()}_fmadd_ps(a_{i}_{k}, b_{k}_{j}, {c_ij});\n"
+
+
+generate_dot_kernels(
+    x86_f16c_fp16_fp16_fp32(),
+    [
+        "dot,1x32x1",
+        "dot,2x32x1",
+        "dot,2x16x1",
+        "dot,3x16x1",
+        "dot,4x16x1",
+        "dot,4x8x1",
+        "dot,6x8x1",
+        "dot,8x8x1",
+    ],
+)
+
+generate_dot_kernels(
+    x86_f16c_fma3_fp16_fp16_fp32(),
+    [
+        "dot,1x32x1",
+        "dot,2x32x1",
+        "dot,1x16x1",
+        "dot,2x16x1",
+        "dot,4x16x1",
+        "dot,2x8x1",
+        "dot,4x8x1",
+        "dot,8x8x1",
+    ],
+)
+
+generate_dot_kernels(
+    x86_avx512_fp16_fp16_fp32(),
+    [
+        "dot,1x64x1",
+        "dot,2x64x1",
+        "dot,3x64x1",
+        "dot,4x64x1",
+        "dot,5x64x1",
+        "dot,2x32x1",
+        "dot,3x32x1",
+        "dot,4x32x1",
+        "dot,5x32x1",
+        # The kernels which are commented out should be good, but for some
+        # reason they don't perform well. They don't seem to spill, so keeping
+        # them until we understand why are they slower.
+        # "dot,6x32x1",
+        # "dot,8x32x1",
+        # "dot,10x32x1",
+        # "dot,12x32x1",
+        "dot,5x16x1",
+        # "dot,16x16x1",
+    ],
+)

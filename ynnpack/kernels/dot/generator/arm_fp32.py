@@ -9,11 +9,13 @@
 # pylint: disable=invalid-name
 
 from ynnpack.kernels.dot.generator.arm import arm_neon
+from ynnpack.kernels.dot.generator.dot_base import generate_dot_kernels
 
 
 class arm_neon_fp32(arm_neon):
-  def __init__(self):
-    super().__init__("neon", "fp32", "float", (1, 4, 1))
+
+  def __init__(self, arch="neon", tile_shape=(1, 4, 1)):
+    super().__init__(arch, "fp32", "float", tile_shape)
     self.a_type = "float"
     self.b_type = "float"
     self.flags += ["dot_flag::consistent_arithmetic"]
@@ -47,3 +49,21 @@ class arm64_neon_fp32(arm_neon_fp32):
     else:
       assert block_k % 4 == 0
       return f"{c_ij} = vfmaq_laneq_f32({c_ij}, {b_kj}, {a_ik}, {k%4});\n"
+
+
+generate_dot_kernels(
+    arm64_neon_fp32(),
+    [
+        "dot,1x32x4",
+        "dot,2x32x4",
+        "dot,3x32x4",
+        "dot,2x16x4",
+        "dot,3x16x4",
+        "dot,4x16x4",
+        "dot,5x16x4",
+        "dot,4x8x4",
+        "dot,6x8x4",
+        "dot,8x8x4",
+        "dot,8x4x4",
+    ],
+)
