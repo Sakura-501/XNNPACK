@@ -527,10 +527,14 @@ enum xnn_status xnn_insert_clamp_node(xnn_subgraph_t subgraph, float output_min,
 enum xnn_status xnn_insert_pack_lh_node(xnn_subgraph_t subgraph,
                                         uint32_t input_id, uint32_t* new_id);
 
+enum xnn_status xnn_subgraph_reserve_values(xnn_subgraph_t subgraph,
+                                            size_t num_values);
 struct xnn_value* xnn_subgraph_new_internal_value(xnn_subgraph_t subgraph);
 enum xnn_status xnn_subgraph_add_internal_values(xnn_subgraph_t subgraph,
                                                  size_t num_values);
 
+enum xnn_status xnn_subgraph_reserve_nodes(xnn_subgraph_t subgraph,
+                                           size_t num_nodes);
 struct xnn_node* xnn_subgraph_new_node(xnn_subgraph_t subgraph);
 
 enum xnn_status xnn_subgraph_add_nodes(xnn_subgraph_t subgraph,
